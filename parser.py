@@ -14,12 +14,12 @@ def submit():
         print(error)
     window.destroy()
 
-# Indeed Resume Parser Window
+# Parser Window
 window = tk.Tk()
 logo = tk.PhotoImage(file='images/logo.png')
 window.title('Indeed Resume Parser')
 window.iconphoto(False, logo)
-window.bind('<Return>', submit)
+# window.bind('<Return>', submit)
 window.configure(bg='gray')
 
 # Email Label and Entry
@@ -36,6 +36,7 @@ frame_password.grid(row=1, column=0, padx=10, pady=10, sticky='w')
 label_password = tk.Label(master=frame_password, text='Password:', bg='gray')
 label_password.grid(sticky='w')
 entry_password = tk.Entry(master=frame_password, width=35)
+entry_password.config(show="●")
 entry_password.grid()
 
 # Resume Link Label and Entry
