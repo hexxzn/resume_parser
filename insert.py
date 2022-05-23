@@ -50,5 +50,3 @@ def insert(email, password, extract_url, document_name='template.docx', ):
                     replace(paragraph, 'ExperienceList', experience)
 
     document.save('resume.docx')
-
-# insert('pixelprogressive@gmail.com', 'Georgelovesrock', 'https://employers.indeed.com/c#candidates/view?id=dca64aa83505&cltk=1g3pd7dtvgui8800&pos=0&showLikelyNotQualified=true&l=QGIU&sort=searchRelevance&p=1')

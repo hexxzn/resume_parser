@@ -19,7 +19,7 @@ window = tk.Tk()
 logo = tk.PhotoImage(file='images/logo.png')
 window.title('Indeed Resume Parser')
 window.iconphoto(False, logo)
-# window.bind('<Return>', submit)
+window.bind('<Return>', submit)
 window.configure(bg='gray')
 
 # Email Label and Entry
