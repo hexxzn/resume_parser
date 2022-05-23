@@ -1,0 +1,6 @@
+__pycache__
+*.pyc
+*.log
+testinfo.txt
+resume.docx
+template.docx
