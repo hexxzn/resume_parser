@@ -5,10 +5,6 @@ from docx import Document
 from replace import replace
 from login import login
 
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.by import By
-
 class Candidate:
     def __init__(self, first, last, location, email, phone, summary, skills, education, experience):
         # Candidate Identity
@@ -76,7 +72,7 @@ class Candidate:
 def extract(email, password, url):
     driver = webdriver.Firefox()
     driver.get(url)
-    # login(driver, email, password)
+    login(driver, email, password)
     source = driver.page_source
     driver.close()
 

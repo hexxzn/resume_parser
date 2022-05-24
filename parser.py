@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
 
-from config import email, password
+from config import email, password, url
 from data import insert
 
 # Pass Entry Information to Insert Function
@@ -10,7 +10,7 @@ def submit():
     try:
         email = entry_email.get()
         password = entry_password.get()
-        extract_url = entry_link.get()
+        extract_url = entry_url.get()
         insert(email, password, extract_url)
     except Exception as error:
         messagebox.showerror(title='Error', message=error)
@@ -47,11 +47,13 @@ entry_password.config(show="●")
 entry_password.grid(row=1, column=1, padx=(10, 0), pady=(0, 10))
 Auto_Fill(entry_password, password)
 
-# Resume Link Label and Entry
-label_link = ttk.Label(master=frame_main, text='Resume Link:')
-label_link.grid(row=2, column=0, pady=(0, 10), sticky='w')
-entry_link = ttk.Entry(master=frame_main, width=35)
-entry_link.grid(row=2, column=1, padx=(10, 0), pady=(0, 10))
+# Resume URL Label and Entry
+label_url = ttk.Label(master=frame_main, text='Resume URL:')
+label_url.grid(row=2, column=0, pady=(0, 10), sticky='w')
+entry_url = ttk.Entry(master=frame_main, width=35)
+entry_url.grid(row=2, column=1, padx=(10, 0), pady=(0, 10))
+if url:
+    Auto_Fill(entry_url, url)
 
 # Submit Button
 button_submit = ttk.Button(master=frame_main, text='Submit', width=10, command=submit)
