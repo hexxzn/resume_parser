@@ -1,6 +1,9 @@
 import tkinter as tk
+from tkinter import ttk
 from tkinter import messagebox
-from insert import insert
+
+from config import email, password
+from data import insert
 
 # Pass Entry Information to Insert Function
 def submit():
@@ -14,43 +17,44 @@ def submit():
         print(error)
     window.destroy()
 
+# Auto Fill Entry With Config Variables
+def Auto_Fill(entry, text):
+    entry.insert(0, text)
+
 # Parser Window
 window = tk.Tk()
 logo = tk.PhotoImage(file='images/logo.png')
 window.title('Indeed Resume Parser')
 window.iconphoto(False, logo)
 window.bind('<Return>', submit)
-window.configure(bg='gray')
+frame_main = ttk.Frame(master=window)
+frame_main.grid(padx=10, pady=10)
+style = ttk.Style()
+style.theme_use('clam')
 
 # Email Label and Entry
-frame_email = tk.Frame(master=window, bg='gray')
-frame_email.grid(row=0, column=0, padx=10, pady=10, sticky='w')
-label_email = tk.Label(master=frame_email, text='Email:', bg='gray')
-label_email.grid(sticky='w')
-entry_email = tk.Entry(master=frame_email, width=35)
-entry_email.grid()
+label_email = ttk.Label(master=frame_main, text='Email:')
+label_email.grid(row=0, column=0, pady=(0, 10), sticky='w')
+entry_email = ttk.Entry(master=frame_main, width=35)
+entry_email.grid(row=0, column=1, padx=(10, 0), pady=(0, 10))
+Auto_Fill(entry_email, email)
 
 # Password Label and Entry
-frame_password = tk.Frame(master=window, bg='gray')
-frame_password.grid(row=1, column=0, padx=10, pady=10, sticky='w')
-label_password = tk.Label(master=frame_password, text='Password:', bg='gray')
-label_password.grid(sticky='w')
-entry_password = tk.Entry(master=frame_password, width=35)
+label_password = ttk.Label(master=frame_main, text='Password:')
+label_password.grid(row=1, column=0, pady=(0, 10), sticky='w')
+entry_password = ttk.Entry(master=frame_main, width=35)
 entry_password.config(show="●")
-entry_password.grid()
+entry_password.grid(row=1, column=1, padx=(10, 0), pady=(0, 10))
+Auto_Fill(entry_password, password)
 
 # Resume Link Label and Entry
-frame_link = tk.Frame(master=window, bg='gray')
-frame_link.grid(row=2, column=0, padx=10, pady=10, sticky='w')
-label_link = tk.Label(master=frame_link, text='Resume Link:', bg='gray')
-label_link.grid(sticky='w')
-entry_link = tk.Entry(master=frame_link, width=35)
-entry_link.grid()
+label_link = ttk.Label(master=frame_main, text='Resume Link:')
+label_link.grid(row=2, column=0, pady=(0, 10), sticky='w')
+entry_link = ttk.Entry(master=frame_main, width=35)
+entry_link.grid(row=2, column=1, padx=(10, 0), pady=(0, 10))
 
 # Submit Button
-frame_submit = tk.Frame(master=window)
-frame_submit.grid(row=3, column=0, padx=10, pady=10, sticky='w')
-button_submit = tk.Button(master=frame_submit, text='Submit', width=10, command=submit)
-button_submit.grid()
+button_submit = ttk.Button(master=frame_main, text='Submit', width=10, command=submit)
+button_submit.grid(row=3, column=1, padx=(10, 0), sticky='e')
 
 window.mainloop()
