@@ -1,8 +1,8 @@
+import json
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
 
-from resources.config import email, password
 from data import insert
 
 # Pass Entry Information to Insert Function
@@ -22,9 +22,15 @@ def Auto_Fill(entry, text):
     if text:
         entry.insert(0, text)
 
+# Load Config Variables
+with open('resources/config.json', 'r') as config:
+    creds = json.load(config)
+    email = creds['email']
+    password = creds['password']
+
 # Parser Window
 window = tk.Tk()
-logo = tk.PhotoImage(file='resources/logo.png')
+logo = tk.PhotoImage(file='resources/sourceflow.png')
 window.iconphoto(False, logo)
 window.title('Indeed Resume Extractor')
 window.bind('<Return>', submit)

@@ -72,7 +72,7 @@ class Candidate:
 def extract(email, password, url):
     driver = webdriver.Firefox()
     driver.get(url)
-    # login(driver, email, password)
+    login(driver, email, password)
     source = driver.page_source
     driver.close()
 
@@ -93,7 +93,7 @@ def extract(email, password, url):
     return candidate
 
 # Insert Data Into Word Document
-def insert(email, password, url, document_name='resources/template.docx', ):
+def insert(email, password, url, document_name='resumes/template.docx', ):
     document = Document(document_name)
     candidate = extract(email, password, url)
 
@@ -116,7 +116,7 @@ def insert(email, password, url, document_name='resources/template.docx', ):
                     replace(paragraph, 'Experience', candidate.experience)
 
     filename = candidate.first + candidate.last
-    document.save('resources/' + filename + '.docx')
+    document.save('resumes/' + filename + '.docx')
 
 # For element In Document, Replace target_text with replacement_text
 def replace(element, target_text, replacement_text):
