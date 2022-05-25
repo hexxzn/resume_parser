@@ -93,7 +93,7 @@ def extract(email, password, url):
     return candidate
 
 # Insert Data Into Word Document
-def insert(email, password, url, document_name='template.docx', ):
+def insert(email, password, url, document_name='resources/template.docx', ):
     document = Document(document_name)
     candidate = extract(email, password, url)
 
@@ -115,7 +115,7 @@ def insert(email, password, url, document_name='template.docx', ):
                     replace(paragraph, 'EducationList', candidate.education)
                     replace(paragraph, 'ExperienceList', candidate.experience)
 
-    document.save('resume.docx')
+    document.save('resources/resume.docx')
 
 # For element In Document, Replace target_text with replacement_text
 def replace(element, target_text, replacement_text):
