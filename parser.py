@@ -19,18 +19,22 @@ def submit():
 
 # Auto Fill Entry With Config Variables
 def Auto_Fill(entry, text):
-    entry.insert(0, text)
+    if text:
+        entry.insert(0, text)
 
 # Parser Window
+
 window = tk.Tk()
-logo = tk.PhotoImage(file='images/logo.png')
-window.title('Indeed Resume Parser')
+logo = tk.PhotoImage(file='logo.png')
 window.iconphoto(False, logo)
+window.title('Indeed Resume Extractor')
 window.bind('<Return>', submit)
-frame_main = ttk.Frame(master=window)
-frame_main.grid(padx=10, pady=10)
+window.resizable(width=False, height=False)
 style = ttk.Style()
 style.theme_use('clam')
+frame_main = ttk.Frame(master=window)
+frame_main.grid(padx=10, pady=10)
+
 
 # Email Label and Entry
 label_email = ttk.Label(master=frame_main, text='Email:')

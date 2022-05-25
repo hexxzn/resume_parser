@@ -1,8 +1,8 @@
 from selenium import webdriver
 from bs4 import BeautifulSoup
 from docx import Document
+import re
 
-from replace import replace
 from login import login
 
 class Candidate:
@@ -72,7 +72,7 @@ class Candidate:
 def extract(email, password, url):
     driver = webdriver.Firefox()
     driver.get(url)
-    login(driver, email, password)
+    # login(driver, email, password)
     source = driver.page_source
     driver.close()
 
@@ -116,3 +116,17 @@ def insert(email, password, url, document_name='template.docx', ):
                     replace(paragraph, 'ExperienceList', candidate.experience)
 
     document.save('resume.docx')
+
+# For element In Document, Replace target_text with replacement_text
+def replace(element, target_text, replacement_text):
+        inline = element.runs
+        for i in range(len(inline)):
+            if target_text in inline[i].text:
+                text = inline[i].text.replace(target_text, replacement_text)
+                inline[i].text = text
+
+# Remove White Space And Line Breaks
+def format(string):
+    string = re.sub(' +', ' ', string)
+    string = re.sub('\n', '', string)
+    return string
