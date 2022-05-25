@@ -31,15 +31,12 @@ def login(driver, email, password):
         time.sleep(1)
     driver.find_element_by_css_selector('.icl-Button').click()
 
-    # Wait For Page To Fully Load
-    #
-    #
-    #
-    #
+    # Wait For Resume To Load
+    wait(driver, '.rdp-resume-container')
 
 # Check For Captcha And Wait For User To Complete Captcha Challenge
 def captcha(driver):
-        time.sleep(1)
+        time.sleep(2)
         if driver.find_elements_by_tag_name('iframe'):
         # Find Captcha Element
             for element in driver.find_elements_by_tag_name('iframe'):
@@ -49,7 +46,7 @@ def captcha(driver):
                         captcha = driver.find_element_by_css_selector('#checkbox')
                         # Wait For User to Complete Captcha
                         while captcha.get_attribute('aria-checked') == 'false':
-                            time.sleep(1)
+                            time.sleep(2)
                         break
             driver.switch_to.default_content()
             driver.find_element_by_css_selector('.css-157vc5a').click()

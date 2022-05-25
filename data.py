@@ -8,15 +8,15 @@ from login import login
 class Candidate:
     def __init__(self, first, last, location, email, phone, summary, skills, education, experience):
         # Candidate Identity
-        self.first = first.contents[0] if first else '<First Name>'
-        self.last = last.contents[0] if last else '<Last Name>'
-        self.location = location.contents[0] if location else '<Location>'
-        self.email = email.contents[0] if email else '<Email Address>'
-        self.phone = phone.contents[0] if phone else '<Phone Number>'
-        self.summary = summary.contents[0] if summary else '<Summary>'
+        self.first = first.contents[0] if first else 'First Name'
+        self.last = last.contents[0] if last else 'Last Name'
+        self.location = location.contents[0] if location else 'Location'
+        self.email = email.contents[0] if email else 'Email Address'
+        self.phone = phone.contents[0] if phone else 'Phone Number'
+        self.summary = summary.contents[0] if summary else 'Summary'
         
         # Candidate Skills
-        self.skills = '' if skills else '<Skills>'
+        self.skills = '' if skills else 'Skills'
         for skill in skills:
             self.skills += format(skill.contents[0]) + '\n'
 
@@ -36,7 +36,7 @@ class Candidate:
         else:
             education_dict['Education'] = 'None'
 
-        self.education = '' if education_dict else '<Education>'
+        self.education = '' if education_dict else 'Education'
         for key in education_dict:
             self.education += format(key) + '\n'
             for value in education_dict[key]:
@@ -111,11 +111,12 @@ def insert(email, password, url, document_name='resources/template.docx', ):
                     replace(paragraph, 'EmailAddress', candidate.email)
                     replace(paragraph, 'Location', candidate.location)
                     replace(paragraph, 'Summary', candidate.summary)
-                    replace(paragraph, 'SkillsList', candidate.skills)
-                    replace(paragraph, 'EducationList', candidate.education)
-                    replace(paragraph, 'ExperienceList', candidate.experience)
+                    replace(paragraph, 'Skills', candidate.skills)
+                    replace(paragraph, 'Education', candidate.education)
+                    replace(paragraph, 'Experience', candidate.experience)
 
-    document.save('resources/resume.docx')
+    filename = candidate.first + candidate.last
+    document.save('resources/' + filename + '.docx')
 
 # For element In Document, Replace target_text with replacement_text
 def replace(element, target_text, replacement_text):

@@ -23,7 +23,6 @@ def Auto_Fill(entry, text):
         entry.insert(0, text)
 
 # Parser Window
-
 window = tk.Tk()
 logo = tk.PhotoImage(file='resources/logo.png')
 window.iconphoto(False, logo)
@@ -58,7 +57,7 @@ entry_url = ttk.Entry(master=frame_main, width=35)
 entry_url.grid(row=2, column=1, padx=(10, 0), pady=(0, 10))
 
 # Submit Button
-button_submit = ttk.Button(master=frame_main, text='Submit', width=10, command=submit)
+button_submit = ttk.Button(master=frame_main, text='Extract', width=10, command=submit)
 button_submit.grid(row=3, column=1, padx=(10, 0), sticky='e')
 
 window.mainloop()
