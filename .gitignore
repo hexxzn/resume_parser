@@ -1,4 +1,3 @@
 *.pyc
 *.log
 resources/resume.docx
-config.py

@@ -20,7 +20,7 @@ def login(driver, email, password):
     # Enter Password, Click Sign In
     wait(driver, '.e1jgz0i3')
     driver.find_element_by_css_selector('.e1jgz0i3').send_keys(password)
-    # driver.find_element_by_css_selector('.css-157vc5a').click()
+    driver.find_element_by_css_selector('.css-157vc5a').click()
 
     # Check For Captcha
     captcha(driver)
