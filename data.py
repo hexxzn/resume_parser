@@ -14,11 +14,13 @@ class Candidate:
         self.email = email.contents[0] if email else 'Email Address'
         self.phone = phone.contents[0] if phone else 'Phone Number'
         self.summary = summary.contents[0] if summary else 'Summary'
-        
+        self.contact = self.phone + '\n' + self.email + '\n' + self.location
+
         # Candidate Skills
         self.skills = '' if skills else 'Skills'
         for skill in skills:
             self.skills += format(skill.contents[0]) + '\n'
+        self.skills = self.skills[:-1]
 
         # Candidate Education
         education_dict = {}
@@ -42,6 +44,7 @@ class Candidate:
             for value in education_dict[key]:
                 self.education += format(value) + '\n'
             self.education += '\n'
+        self.education = self.education[:-2]
 
         # Candidate Experience
         experience_dict = {}
@@ -67,6 +70,7 @@ class Candidate:
             for value in experience_dict[key]:
                 self.experience += format(value) + '\n'
             self.experience += '\n'
+        self.experience = self.experience[:-2]
 
 # Extract HTML From URL With Indeed Account Credentials
 def extract(email, password, url):
@@ -99,21 +103,27 @@ def insert(email, password, url, document_name='resumes/template.docx', ):
 
     # Replace Text In Paragraphs
     for paragraph in document.paragraphs:
-        replace(paragraph, 'FirstName', candidate.first.upper())
-        replace(paragraph, 'LastName', candidate.last.upper())
+        replace(paragraph, '<FirstName>', candidate.first.upper())
+        replace(paragraph, '<LastName>', candidate.last.upper())
+        replace(paragraph, '<Contact>', candidate.contact)
+        replace(paragraph, '<Summary>', candidate.summary)
+        replace(paragraph, '<Skills>', candidate.skills)
+        replace(paragraph, '<Education>', candidate.education)
+        replace(paragraph, '<Experience>', candidate.experience)
 
     # Replace Text In Tables
     for table in document.tables:
         for row in table.rows:
             for cell in row.cells:
                 for paragraph in cell.paragraphs:
-                    replace(paragraph, 'PhoneNumber', candidate.phone)
-                    replace(paragraph, 'EmailAddress', candidate.email)
-                    replace(paragraph, 'Location', candidate.location)
-                    replace(paragraph, 'Summary', candidate.summary)
-                    replace(paragraph, 'Skills', candidate.skills)
-                    replace(paragraph, 'Education', candidate.education)
-                    replace(paragraph, 'Experience', candidate.experience)
+                    
+                    replace(paragraph, '<FirstName>', candidate.first.upper())
+                    replace(paragraph, '<LastName>', candidate.last.upper())
+                    replace(paragraph, '<Contact>', candidate.contact)
+                    replace(paragraph, '<Summary>', candidate.summary)
+                    replace(paragraph, '<Skills>', candidate.skills)
+                    replace(paragraph, '<Education>', candidate.education)
+                    replace(paragraph, '<Experience>', candidate.experience)
 
     filename = candidate.first + candidate.last
     document.save('resumes/' + filename + '.docx')
@@ -123,6 +133,7 @@ def replace(element, target_text, replacement_text):
         inline = element.runs
         for i in range(len(inline)):
             if target_text in inline[i].text:
+                print(target_text, replacement_text)
                 text = inline[i].text.replace(target_text, replacement_text)
                 inline[i].text = text
 
