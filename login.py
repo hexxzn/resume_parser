@@ -16,7 +16,7 @@ def login(driver, email, password):
     # Enter Email Address Again If Necessary, Click Continue
     if driver.find_element_by_css_selector('#ifl-InputFormField-3').get_attribute('value') == '':
         driver.find_element_by_css_selector('#ifl-InputFormField-3').send_keys(email)
-        driver.find_element_by_css_selector('.css-157vc5a').click()
+    driver.find_element_by_css_selector('.css-157vc5a').click()
 
     # Click Log In With Password
     wait(driver, '#auth-page-google-password-fallback')
@@ -33,7 +33,7 @@ def login(driver, email, password):
     # Enter Password Again If Necessary, Click Continue
     if driver.find_element_by_css_selector('.e1jgz0i3').get_attribute('value') == '':
         driver.find_element_by_css_selector('.e1jgz0i3').send_keys(email)
-        driver.find_element_by_css_selector('.css-157vc5a').click()
+    driver.find_element_by_css_selector('.css-157vc5a').click()
 
     # Wait For User To Enter PIN Number, Click Confirm
     wait(driver, '#verification_input')

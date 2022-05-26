@@ -133,7 +133,6 @@ def replace(element, target_text, replacement_text):
         inline = element.runs
         for i in range(len(inline)):
             if target_text in inline[i].text:
-                print(target_text, replacement_text)
                 text = inline[i].text.replace(target_text, replacement_text)
                 inline[i].text = text
 
