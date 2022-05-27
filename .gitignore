@@ -1,3 +1,4 @@
+resources/cookies.pkl
+updates.txt
 *.pyc
 *.log
-resources/test.txt

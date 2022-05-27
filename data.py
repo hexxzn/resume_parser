@@ -1,9 +1,12 @@
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.by import By
 from selenium import webdriver
 from bs4 import BeautifulSoup
 from docx import Document
+import os.path
+import pickle
 import re
-
-from login import login
 
 class Candidate:
     def __init__(self, first, last, location, email, phone, summary, skills, education, experience):
@@ -73,10 +76,27 @@ class Candidate:
         self.experience = self.experience[:-2]
 
 # Extract HTML From URL With Indeed Account Credentials
-def extract(email, password, url):
+def extract(url, manual_login):
     driver = webdriver.Firefox()
-    driver.get(url)
-    login(driver, email, password)
+    #Log In Manually
+    if not os.path.exists('resources\cookies.pkl') or manual_login:
+        print('Manual Login')
+        driver.get(url)
+        WebDriverWait(driver, 60).until(EC.presence_of_element_located((By.CSS_SELECTOR, '#AccountMenu')))
+        if EC.presence_of_element_located((By.CSS_SELECTOR, '#AccountMenu')):
+            pickle.dump(driver.get_cookies(), open('resources/cookies.pkl', 'wb'))
+    # Log In With Cookies
+    else:
+        print('Auto Login')
+        driver.get(url)
+        cookies = pickle.load(open('resources/cookies.pkl', 'rb'))
+        for cookie in cookies:
+            if cookie['domain'] == '.indeed.com':
+                driver.add_cookie(cookie)
+        driver.get(url)
+    
+    print('Waiting For Resume')
+    WebDriverWait(driver, 60).until(EC.presence_of_element_located((By.CSS_SELECTOR, '.rdp-resume-container')))
     source = driver.page_source
     driver.close()
 
@@ -97,9 +117,9 @@ def extract(email, password, url):
     return candidate
 
 # Insert Data Into Word Document
-def insert(email, password, url, document_name='resumes/template.docx', ):
+def insert(url, manual_login, document_name='resumes/template.docx', ):
     document = Document(document_name)
-    candidate = extract(email, password, url)
+    candidate = extract(url, manual_login)
 
     # Replace Text In Paragraphs
     for paragraph in document.paragraphs:
@@ -116,7 +136,6 @@ def insert(email, password, url, document_name='resumes/template.docx', ):
         for row in table.rows:
             for cell in row.cells:
                 for paragraph in cell.paragraphs:
-                    
                     replace(paragraph, '<FirstName>', candidate.first.upper())
                     replace(paragraph, '<LastName>', candidate.last.upper())
                     replace(paragraph, '<Contact>', candidate.contact)
