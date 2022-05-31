@@ -78,25 +78,23 @@ class Candidate:
 # Extract HTML From URL With Indeed Account Credentials
 def extract(url, manual_login):
     driver = webdriver.Firefox()
+
     #Log In Manually
     if not os.path.exists('resources\cookies.pkl') or manual_login:
-        print('Manual Login')
         driver.get(url)
-        WebDriverWait(driver, 60).until(EC.presence_of_element_located((By.CSS_SELECTOR, '#AccountMenu')))
-        if EC.presence_of_element_located((By.CSS_SELECTOR, '#AccountMenu')):
+        WebDriverWait(driver, 60).until(EC.presence_of_element_located((By.CSS_SELECTOR, '.rdp-resume-container')))
+        if EC.presence_of_element_located((By.CSS_SELECTOR, '.rdp-resume-container')):
             pickle.dump(driver.get_cookies(), open('resources/cookies.pkl', 'wb'))
     # Log In With Cookies
     else:
-        print('Auto Login')
         driver.get(url)
         cookies = pickle.load(open('resources/cookies.pkl', 'rb'))
         for cookie in cookies:
             if cookie['domain'] == '.indeed.com':
                 driver.add_cookie(cookie)
         driver.get(url)
+        WebDriverWait(driver, 60).until(EC.presence_of_element_located((By.CSS_SELECTOR, '.rdp-resume-container')))
     
-    print('Waiting For Resume')
-    WebDriverWait(driver, 60).until(EC.presence_of_element_located((By.CSS_SELECTOR, '.rdp-resume-container')))
     source = driver.page_source
     driver.close()
 
