@@ -75,14 +75,14 @@ class Candidate:
             self.experience += '\n'
         self.experience = self.experience[:-2]
 
-# Extract HTML From URL With Indeed Account Credentials
+# Extract And Parse HTML From URL
 def extract(url, manual_login):
     driver = webdriver.Firefox()
 
     #Log In Manually
     if not os.path.exists('resources\cookies.pkl') or manual_login:
         driver.get(url)
-        WebDriverWait(driver, 60).until(EC.presence_of_element_located((By.CSS_SELECTOR, '.rdp-resume-container')))
+        WebDriverWait(driver, 60).until(EC.presence_of_element_located((By.CSS_SELECTOR, '.rdp-resume-container'))) # Wait for resume to load before saving cookies
         if EC.presence_of_element_located((By.CSS_SELECTOR, '.rdp-resume-container')):
             pickle.dump(driver.get_cookies(), open('resources/cookies.pkl', 'wb'))
     # Log In With Cookies
@@ -95,11 +95,12 @@ def extract(url, manual_login):
         driver.get(url)
         WebDriverWait(driver, 60).until(EC.presence_of_element_located((By.CSS_SELECTOR, '.rdp-resume-container')))
     
+    # Extract Page Source
     source = driver.page_source
     driver.close()
-
     soup = BeautifulSoup(source, "html.parser")
 
+    # Pass Target Data To Candidate Instance
     candidate = Candidate(
         soup.find('span', {'data-shield-id': 'firstname'}),
         soup.find('span', {'data-shield-id': 'lastname'}),
@@ -114,46 +115,48 @@ def extract(url, manual_login):
 
     return candidate
 
-# Insert Data Into Word Document
+# Search Word Document For Text Fields
 def insert(url, manual_login, document_name='resumes/template.docx', ):
     document = Document(document_name)
     candidate = extract(url, manual_login)
 
     # Replace Text In Paragraphs
     for paragraph in document.paragraphs:
-        replace(paragraph, '<FirstName>', candidate.first.upper())
-        replace(paragraph, '<LastName>', candidate.last.upper())
-        replace(paragraph, '<Contact>', candidate.contact)
-        replace(paragraph, '<Summary>', candidate.summary)
-        replace(paragraph, '<Skills>', candidate.skills)
-        replace(paragraph, '<Education>', candidate.education)
-        replace(paragraph, '<Experience>', candidate.experience)
+        replace(paragraph, candidate)
 
     # Replace Text In Tables
     for table in document.tables:
         for row in table.rows:
             for cell in row.cells:
                 for paragraph in cell.paragraphs:
-                    replace(paragraph, '<FirstName>', candidate.first.upper())
-                    replace(paragraph, '<LastName>', candidate.last.upper())
-                    replace(paragraph, '<Contact>', candidate.contact)
-                    replace(paragraph, '<Summary>', candidate.summary)
-                    replace(paragraph, '<Skills>', candidate.skills)
-                    replace(paragraph, '<Education>', candidate.education)
-                    replace(paragraph, '<Experience>', candidate.experience)
+                    replace(paragraph, candidate)
 
+    # Save Resume As New Word Document
     filename = candidate.first + candidate.last
     document.save('resumes/' + filename + '.docx')
 
-# For element In Document, Replace target_text with replacement_text
-def replace(element, target_text, replacement_text):
-        inline = element.runs
-        for i in range(len(inline)):
-            if target_text in inline[i].text:
-                text = inline[i].text.replace(target_text, replacement_text)
-                inline[i].text = text
+# Find And Replace Strings
+def replace(element, candidate):
+    # List Of Target Strings And Their Replacements
+    targets = [
+        ('<FirstName>', candidate.first.upper()),
+        ('<LastName>', candidate.last.upper()),
+        ('<Contact>', candidate.contact),
+        ('<Summary>', candidate.summary),
+        ('<Skills>', candidate.skills),
+        ('<Education>', candidate.education),
+        ('<Experience>', candidate.experience),
+        ]
 
-# Remove White Space And Line Breaks
+    # Find Target In Element And Replace With Replacement
+    inline = element.runs
+    for i in range(len(inline)):
+        for target in targets:
+                if target[0] in inline[i].text:
+                    text = inline[i].text.replace(target[0], target[1])
+                    inline[i].text = text
+
+# Remove Excess White Space And Line Breaks
 def format(string):
     string = re.sub(' +', ' ', string)
     string = re.sub('\n', '', string)
