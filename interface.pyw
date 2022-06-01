@@ -1,12 +1,12 @@
 import tkinter as tk
 from tkinter import BooleanVar, ttk, messagebox
 
-from data import main
+from extractor import resume_extractor
 
-# Pass url to data functions
+# Pass url to extractor
 def submit(event = None):
     try:
-        main(entry_url.get(), manual_login.get())
+        resume_extractor(entry_url.get(), manual_login.get())
     except Exception as error:
         print(error)
         messagebox.showerror(title='Error', message=error)
