@@ -1,15 +1,15 @@
 import tkinter as tk
 from tkinter import BooleanVar, ttk, messagebox
 
-from data import insert
+from data import main
 
 # Pass URL To Insert Function
 def submit(event = None):
-    try:
-        insert(entry_url.get(), manual_login.get())
-    except Exception as error:
-        print(error)
-        messagebox.showerror(title='Error', message=error)
+    # try:
+    main(entry_url.get(), manual_login.get())
+    # except Exception as error:
+    #     print(error)
+    #     messagebox.showerror(title='Error', message=error)
     window.destroy()
 
 # Window

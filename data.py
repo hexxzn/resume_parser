@@ -21,7 +21,7 @@ class Candidate:
         # Candidate Skills
         self.skills = '' if skills else 'Skills'
         for skill in skills:
-            self.skills += format(skill.contents[0]) + '\n'
+            self.skills += format_string(skill.contents[0]) + '\n'
         self.skills = self.skills[:-1]
 
         # Candidate Education
@@ -42,9 +42,9 @@ class Candidate:
 
         self.education = '' if education_dict else 'Education'
         for key in education_dict:
-            self.education += format(key) + '\n'
+            self.education += format_string(key) + '\n'
             for value in education_dict[key]:
-                self.education += format(value) + '\n'
+                self.education += format_string(value) + '\n'
             self.education += '\n'
         self.education = self.education[:-2]
 
@@ -68,16 +68,26 @@ class Candidate:
 
         self.experience = ''
         for key in experience_dict:
-            self.experience += format(key) + '\n'
+            self.experience += format_string(key) + '\n'
             for value in experience_dict[key]:
-                self.experience += format(value) + '\n'
+                self.experience += format_string(value) + '\n'
             self.experience += '\n'
         self.experience = self.experience[:-2]
 
-# Extract And Parse HTML From URL
-def extract(url, manual_login):
-    driver = webdriver.Firefox()
+# Extract Candidate Data From HTML
+def main(url, manual_login):
+    driver = webdriver.Firefox() # Create driver
 
+    indeed_login(driver, url, manual_login) # Log in to Indeed
+    
+    source = driver.page_source # Get page source
+    driver.close()
+    
+    candidate = create_candidate(source) # Create candidate
+
+    parse_document_text(candidate) # Create resume from template
+
+def indeed_login(driver, url, manual_login):
     #Log In Manually
     if not os.path.exists('resources\cookies.pkl') or manual_login:
         driver.get(url)
@@ -93,13 +103,11 @@ def extract(url, manual_login):
                 driver.add_cookie(cookie)
         driver.get(url)
         WebDriverWait(driver, 60).until(EC.presence_of_element_located((By.CSS_SELECTOR, '.rdp-resume-container')))
-    
-    # Extract Page Source
-    source = driver.page_source
-    driver.close()
+
+# Create Candidate Instance
+def create_candidate(source):
     soup = BeautifulSoup(source, "html.parser")
 
-    # Pass Target Data To Candidate Instance
     candidate = Candidate(
         soup.find('span', {'data-shield-id': 'firstname'}),
         soup.find('span', {'data-shield-id': 'lastname'}),
@@ -114,29 +122,28 @@ def extract(url, manual_login):
 
     return candidate
 
-# Search Word Document For Text Fields
-def insert(url, manual_login, document_name='resumes/template.docx', ):
+# Iterate Through Text Elements In Document
+def parse_document_text(candidate, document_name='resumes/template.docx'):
     document = Document(document_name)
-    candidate = extract(url, manual_login)
 
     # Replace Text In Paragraphs
     for paragraph in document.paragraphs:
-        replace(paragraph, candidate)
+        replace_document_text(paragraph, candidate)
 
     # Replace Text In Tables
     for table in document.tables:
         for row in table.rows:
             for cell in row.cells:
                 for paragraph in cell.paragraphs:
-                    replace(paragraph, candidate)
+                    replace_document_text(paragraph, candidate)
 
     # Save Resume As New Word Document
     filename = candidate.first + candidate.last
     document.save('resumes/' + filename + '.docx')
 
-# Find And Replace Strings
-def replace(element, candidate):
-    # (Text To Replace, Replacement Value, Replace Location)
+# Find And Replace Text In Word Document
+def replace_document_text(element, candidate):
+    # String To Find, Replacement String
     replacements = [
         ['FirstName', candidate.first.upper()],
         ['LastName', candidate.last.upper()],
@@ -156,7 +163,7 @@ def replace(element, candidate):
             if item[0] in inline[i].text:
                 item.append(i)
 
-    # Replace Text
+    # Replace Text Found
     for replacement in replacements:
         if len(replacement) == 3:
             index = replacement[2]
@@ -164,8 +171,8 @@ def replace(element, candidate):
             replacement_text = replacement[1]
             inline[index].text = inline[index].text.replace(target_text, replacement_text)
 
-# Remove Excess White Space And Line Breaks
-def format(string):
+# Remove Excess White Space And Line Breaks From String
+def format_string(string):
     string = re.sub(' +', ' ', string)
     string = re.sub('\n', '', string)
     return string
