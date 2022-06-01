@@ -17,7 +17,6 @@ class Candidate:
         self.email = email.contents[0] if email else 'Email Address'
         self.phone = phone.contents[0] if phone else 'Phone Number'
         self.summary = summary.contents[0] if summary else 'Summary'
-        self.contact = self.phone + '\n' + self.email + '\n' + self.location
 
         # Candidate Skills
         self.skills = '' if skills else 'Skills'
@@ -137,24 +136,33 @@ def insert(url, manual_login, document_name='resumes/template.docx', ):
 
 # Find And Replace Strings
 def replace(element, candidate):
-    # List Of Target Strings And Their Replacements
-    targets = [
-        ('<FirstName>', candidate.first.upper()),
-        ('<LastName>', candidate.last.upper()),
-        ('<Contact>', candidate.contact),
-        ('<Summary>', candidate.summary),
-        ('<Skills>', candidate.skills),
-        ('<Education>', candidate.education),
-        ('<Experience>', candidate.experience),
+    # (Text To Replace, Replacement Value, Replace Location)
+    replacements = [
+        ['FirstName', candidate.first.upper()],
+        ['LastName', candidate.last.upper()],
+        ['PhoneNumber', candidate.phone],
+        ['EmailAddress', candidate.email],
+        ['Location', candidate.location],
+        ['Summary', candidate.summary],
+        ['Skills', candidate.skills],
+        ['Education', candidate.education],
+        ['Experience', candidate.experience],
         ]
 
-    # Find Target In Element And Replace With Replacement
+    # Find Text To Replace
     inline = element.runs
     for i in range(len(inline)):
-        for target in targets:
-                if target[0] in inline[i].text:
-                    text = inline[i].text.replace(target[0], target[1])
-                    inline[i].text = text
+        for item in replacements:
+            if item[0] in inline[i].text:
+                item.append(i)
+
+    # Replace Text
+    for replacement in replacements:
+        if len(replacement) == 3:
+            index = replacement[2]
+            target_text = replacement[0]
+            replacement_text = replacement[1]
+            inline[index].text = inline[index].text.replace(target_text, replacement_text)
 
 # Remove Excess White Space And Line Breaks
 def format(string):
