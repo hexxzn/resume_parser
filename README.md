@@ -1,4 +1,5 @@
 <h2>Indeed Resume Extractor</h2>
+
 ![Interface Image](/resources/interface.png?raw=true) <br>
 
 <h4>What it does...</h4>
