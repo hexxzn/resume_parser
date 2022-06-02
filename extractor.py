@@ -96,8 +96,8 @@ def replace_document_text(element, candidate):
 
     # Replace text found
     for replacement in replacements:
-        if len(replacement) == 3:
-            index = replacement[2]
-            target_text = replacement[0]
-            replacement_text = replacement[1]
+        if len(replacement) == 3: # If target text was found, its location becomes the 3rd element in replacement list
+            index = replacement[2] # Inline location of text to replace
+            target_text = replacement[0] # Text to remove/replace
+            replacement_text = replacement[1] # Text to add/insert
             inline[index].text = inline[index].text.replace(target_text, replacement_text)
