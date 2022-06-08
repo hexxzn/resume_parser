@@ -12,5 +12,5 @@
 
 <h4>What it needs...</h4>
 
-1. Some testing for more detailed/informative error handling.
-2. A proper installer to set up geckodriver and firefox on user end if necessary.
+1. Some testing for more detailed/informative error handling
+2. A proper installer to set up geckodriver and firefox on user end if necessary
