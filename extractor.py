@@ -74,24 +74,28 @@ def parse_document_text(candidate, document='resumes/template.docx'):
 
 # Find and replace text in word document.
 def replace_document_text(element, candidate):
-    # replacements[x] = [string to remove, string to insert]
+    # replacements[x] == [string to remove, string to insert]
     replacements = [
-        ['FirstName', candidate.first.upper()],
-        ['LastName', candidate.last.upper()],
-        ['PhoneNumber', candidate.phone],
-        ['EmailAddress', candidate.email],
-        ['Location', candidate.location],
-        ['Summary', candidate.summary],
-        ['Skills', candidate.skills],
-        ['Education', candidate.education],
-        ['Experience', candidate.experience],
+        ['CandidateFirst', candidate.first.upper()],
+        ['CandidateLast', candidate.last.upper()],
+        ['CandidatePhone', candidate.phone],
+        ['CandidateEmail', candidate.email],
+        ['CandidateLocation', candidate.location],
+        ['CandidateSummary', candidate.summary],
+        ['CandidateSkills', candidate.skills],
+        ['CandidateEducation', candidate.education],
+        ['CandidateExperience', candidate.experience],
         ]
+
+    print(replacements)
 
     # Find text to replace
     inline = element.runs
     for i in range(len(inline)):
         for item in replacements:
+            print('Searching For: ' + str(item))
             if item[0] in inline[i].text:
+                print('Found: ' + item[0])
                 item.append(i)
 
     # Replace text found
