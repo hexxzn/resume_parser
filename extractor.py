@@ -87,15 +87,11 @@ def replace_document_text(element, candidate):
         ['CandidateExperience', candidate.experience],
         ]
 
-    print(replacements)
-
     # Find text to replace
     inline = element.runs
     for i in range(len(inline)):
         for item in replacements:
-            print('Searching For: ' + str(item))
             if item[0] in inline[i].text:
-                print('Found: ' + item[0])
                 item.append(i)
 
     # Replace text found
