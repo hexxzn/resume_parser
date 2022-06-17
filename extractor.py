@@ -18,6 +18,10 @@ def resume_extractor(url, manual_login):
     candidate = create_candidate(source) # Create candidate.
     parse_document_text(candidate) # Create resume from template.
 
+    # with open('source.html', 'w') as sourcefile: # Save page source to file for debug.
+    #     for line in source:
+    #         sourcefile.write(line)
+
 # Log in to Indeed.
 def indeed_login(driver, url, manual_login):
     # Log in manually if manual login is true or if cookies.pkl doesn't exist.

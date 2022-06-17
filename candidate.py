@@ -43,31 +43,46 @@ class Candidate:
         # Candidate experience
         experience_dict = {}
         if experience:
+            index = 0
             for item in experience:
+                experience_dict[index] = {'job_title': 'none', 'company_name': 'none', 'company_location': 'none', 'attendance_date': 'none', 'job_description': 'none'}
                 job_title = item.find('h3', {'data-shield-id': 'workExperience_work_title'})
-                job_title = job_title.contents[0] if job_title else 'Job Title'
+                experience_dict[index]['job_title'] = job_title.contents[0] if job_title else 'Job Title'
                 company_name = item.find('span', {'data-shield-id': 'workExperience_work_experience_company'})
-                company_name = company_name.contents[0] if company_name else 'Company Name'
+                experience_dict[index]['company_name'] = company_name.contents[0] if company_name else 'Company Name'
                 company_location = item.find('span', {'data-shield-id': 'workExperience_location_span'})
-                company_location = company_location.contents[0] if company_location else 'Company Location'
+                experience_dict[index]['company_location'] = company_location.contents[0] if company_location else 'Company Location'
                 attendance_date = item.find('div', {'data-shield-id': 'workExperience_work_dates'})
-                attendance_date = attendance_date.contents[0] if attendance_date else 'Attendance Date'
+                experience_dict[index]['attendance_date'] = attendance_date.contents[0] if attendance_date else 'Attendance Date'
                 job_description = item.find('p', {'data-shield-id': 'workExperience_work_description'})
-                job_description = job_description.contents[0] if job_description else 'Job Description'
-                experience_dict[job_title] = company_name, company_location, attendance_date, job_description
+                if job_description:
+                    experience_dict[index]['job_description'] = ''
+                    for item in job_description.contents:
+                        if isinstance(item, str):
+                            experience_dict[index]['job_description'] += item
+                        else:
+                            experience_dict[index]['job_description'] += '\n'
+                else:
+                    experience_dict[index]['job_description'] = 'Job Description'
+                index += 1
         else:
             experience_dict['Experience'] = 'None'
 
         self.experience = ''
         for key in experience_dict:
-            self.experience += format_string(key) + '\n'
-            for value in experience_dict[key]:
-                self.experience += format_string(value) + '\n'
-            self.experience += '\n'
+            key = int(key)
+            self.experience += experience_dict[key]['job_title'] + '\n'
+            self.experience += experience_dict[key]['company_name'] + '\n'
+            self.experience += experience_dict[key]['company_location'] + '\n'
+            self.experience += experience_dict[key]['attendance_date'] + '\n'
+            self.experience += format_string(experience_dict[int(key)]['job_description']) + '\n\n'
         self.experience = self.experience[:-2]
 
 # Remove excess white space and line breaks from string.
 def format_string(string):
+    string = re.sub('•', '', string)
     string = re.sub(' +', ' ', string)
-    string = re.sub('\n', '', string)
+    string = re.sub('\n ', '\n', string)
+    if string[0] == ' ':
+        string = string[1:]
     return string
