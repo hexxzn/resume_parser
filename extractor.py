@@ -11,38 +11,53 @@ from candidate import Candidate
 
 # Extract candidate data from HTML.
 def resume_extractor(url, manual_login):
-    driver = webdriver.Firefox() # Create driver.
-    indeed_login(driver, url, manual_login) # Log in to Indeed.
-    source = driver.page_source # Get page source.
-    driver.close() # Close driver.
-    candidate = create_candidate(source) # Create candidate.
-    parse_document_text(candidate) # Create resume from template.
+    # Log in to Indeed and navigate to URL
+    driver = webdriver.Firefox()
+    indeed_login(driver, url, manual_login)
 
-    # with open('source.html', 'w') as sourcefile: # Save page source to file for debug.
-    #     for line in source:
-    #         sourcefile.write(line)
+    # Get page source and close browser.
+    source = driver.page_source
+    driver.close()
+
+    # Create candidate and insert candidate date into template.
+    candidate = create_candidate(source)
+    parse_document_text(candidate)
 
 # Log in to Indeed.
 def indeed_login(driver, url, manual_login):
-    # Log in manually if manual login is true or if cookies.pkl doesn't exist.
+    # Log in manually if manual login is checked or if cookies.pkl doesn't exist, otherwise auto login with cookies
     if not os.path.exists('resources\cookies.pkl') or manual_login:
+        # Navigate to URL
         driver.get(url)
-        WebDriverWait(driver, 60).until(EC.presence_of_element_located((By.CSS_SELECTOR, '.rdp-resume-container'))) # Wait for resume to fully load.
-        if EC.presence_of_element_located((By.CSS_SELECTOR, '.rdp-resume-container')): # If resume loads then login was successful.
-            pickle.dump(driver.get_cookies(), open('resources/cookies.pkl', 'wb')) # Save successful login cookies.
-    # Log in with saved cookies.
+
+        # Wait for resume to fully load.
+        WebDriverWait(driver, 60).until(EC.presence_of_element_located((By.CSS_SELECTOR, '.rdp-resume-container')))
+
+        # If resume loads, save cookies.
+        if EC.presence_of_element_located((By.CSS_SELECTOR, '.rdp-resume-container')):
+            pickle.dump(driver.get_cookies(), open('resources/cookies.pkl', 'wb'))
     else:
+        # Navigate to URL. (Lands on login page)
         driver.get(url)
+
+        # Load cookies.
         cookies = pickle.load(open('resources/cookies.pkl', 'rb'))
         for cookie in cookies:
             if cookie['domain'] == '.indeed.com':
-                driver.add_cookie(cookie) # Add cookies to skip login process.
+                driver.add_cookie(cookie)
+
+        # Navigate to URL again after cookies loaded (Lands on resume page)
         driver.get(url)
-        WebDriverWait(driver, 60).until(EC.presence_of_element_located((By.CSS_SELECTOR, '.rdp-resume-container'))) # Wait for resume to fully load.
+
+        # Wait for resume to fully load.
+        WebDriverWait(driver, 60).until(EC.presence_of_element_located((By.CSS_SELECTOR, '.rdp-resume-container')))
 
 # Create candidate instance.
 def create_candidate(source):
+    # Load page source.
     soup = BeautifulSoup(source, "html.parser")
+
+    # Create candidate with elements from page source.
     candidate = Candidate(
         soup.find('span', {'data-shield-id': 'firstname'}), # First name
         soup.find('span', {'data-shield-id': 'lastname'}), # Last name
@@ -78,7 +93,7 @@ def parse_document_text(candidate, document='resumes/template.docx'):
 
 # Find and replace text in word document.
 def replace_document_text(element, candidate):
-    # replacements[x] == [string to remove, string to insert]
+    # [[string to replace, string to insert]]
     replacements = [
         ['CandidateFirst', candidate.first.upper()],
         ['CandidateLast', candidate.last.upper()],
@@ -91,17 +106,29 @@ def replace_document_text(element, candidate):
         ['CandidateExperience', candidate.experience],
         ]
 
-    # Find text to replace
+    # Find text in template
     inline = element.runs
+
+    # For line in element.
     for i in range(len(inline)):
         for item in replacements:
+            # If text to replace is found in line of element.
             if item[0] in inline[i].text:
+                # Append location of text to replace
                 item.append(i)
 
-    # Replace text found
+    # Replace text in template
     for replacement in replacements:
-        if len(replacement) == 3: # If target text was found, its location becomes the 3rd element in replacement list
-            index = replacement[2] # Inline location of text to replace
-            target_text = replacement[0] # Text to remove/replace
-            replacement_text = replacement[1] # Text to add/insert
+        # If target text was found, its location becomes the 3rd element in nested replacements list.
+        if len(replacement) == 3:
+            # Inline location of text to replace.
+            index = replacement[2]
+
+            # Text to remove/replace.
+            target_text = replacement[0]
+
+            # Text to add/insert.
+            replacement_text = replacement[1]
+
+            # Replace
             inline[index].text = inline[index].text.replace(target_text, replacement_text)

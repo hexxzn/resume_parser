@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter import BooleanVar, ttk, messagebox
-
 from extractor import resume_extractor
 
 # Pass url to extractor
